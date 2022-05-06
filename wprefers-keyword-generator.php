@@ -58,12 +58,16 @@ include 'libs/keyword-api.php';
 if (! function_exists('wprefers_keyword_generator_enqueue_scripts')) :
 
     function wprefers_keyword_generator_enqueue_scripts() {
-        wp_enqueue_script( 'wprefers-kg-script', plugin_dir_url(__FILE__).'assets/wprefers-kg-script.js', array('jquery'), null, true );
-        wp_localize_script('wprefers-kg-script', "wprefers_kg_script_data", array(
-            'ajaxurl' => admin_url( 'admin-ajax.php' ),
-            'action'  => 'wprefers_keyword_generator_xhr_action',
-            'security' => wp_create_nonce( "wprefers-keyword-generator-xhr-nonce" )
-        ));
+        global $post;
+
+        if ( ( is_single() || is_page() ) && has_shortcode( $post->post_content, 'wprefers-keyword-generator') ) {
+            wp_enqueue_script('wprefers-kg-script', plugin_dir_url(__FILE__) . 'assets/wprefers-kg-script.js', array('jquery'), null, true);
+            wp_localize_script('wprefers-kg-script', "wprefers_kg_script_data", array(
+                'ajaxurl' => admin_url('admin-ajax.php'),
+                'action' => 'wprefers_keyword_generator_xhr_action',
+                'security' => wp_create_nonce("wprefers-keyword-generator-xhr-nonce")
+            ));
+        }
     }
 
 endif;
